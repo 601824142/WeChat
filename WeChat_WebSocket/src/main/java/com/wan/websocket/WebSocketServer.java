@@ -1,5 +1,7 @@
 package com.wan.websocket;
 
+import com.wan.websocket.handler.ConnectionWebSocketHandler;
+import com.wan.websocket.handler.HeartWebSocketHandler;
 import com.wan.websocket.handler.TextWebSocketHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -44,6 +46,12 @@ public class WebSocketServer implements CommandLineRunner {
     @Autowired
     private TextWebSocketHandler textWebSocketHandler;
 
+    @Autowired
+    private ConnectionWebSocketHandler connectionWebSocketHandler;
+
+    @Autowired
+    private HeartWebSocketHandler heartWebSocketHandler;
+
     /**
      * 初始化WebSocket服务器
      */
@@ -68,8 +76,12 @@ public class WebSocketServer implements CommandLineRunner {
                         pipeline.addLast(new WebSocketServerProtocolHandler("/wechat"));
                         //添加一个读超时的处理器, 在10秒钟之内，如果当前这个客户端（channel），没有读取到任何内容，则自动关闭
                         pipeline.addLast(new ReadTimeoutHandler(10, TimeUnit.SECONDS));
-                        //自定义WebSocket的文本帧处理器
+                        //自定义WebSocket的文本帧处理器(验证消息格式)
                         pipeline.addLast(textWebSocketHandler);
+                        //自定义链接握手的处理器(处理链接握手)
+                        pipeline.addLast(connectionWebSocketHandler);
+                        //自定义保持心跳处理器(验证客户端是否异常掉线)
+                        pipeline.addLast(heartWebSocketHandler);
                     }
                 });
 
@@ -170,7 +182,6 @@ public class WebSocketServer implements CommandLineRunner {
 
         //同步阻塞
         channelFuture.channel().closeFuture().syncUninterruptibly();
-
     }
 
 

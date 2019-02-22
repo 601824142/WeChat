@@ -4,12 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.tobato.fastdfs.domain.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
 import com.wan.dao.IUserDao;
+import com.wan.fegin.ChatFegin;
 import com.wan.pojo.User;
+import com.wan.pojo.WebSocketMessage;
 import com.wan.service.IUserService;
 import com.wan.util.MD5Util;
 import com.wan.util.PinyinUtil;
 import com.wan.util.QRCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -29,6 +32,13 @@ public class UserServiceImpl implements IUserService {
 
         @Autowired
         private FastFileStorageClient fastFileStorageClient;
+
+        //注入Redis
+        @Autowired
+        private RedisTemplate redisTemplate;
+
+        @Autowired
+        private ChatFegin chatFegin;
 
         /**
          * 注册用户
@@ -107,7 +117,20 @@ public class UserServiceImpl implements IUserService {
 
                 //TODO 将登陆的用户和设备唯一标识绑定
                 if (user != null){
+                        //获得当前登陆的设备标识UUID
+                        //获得当前登陆的用户ID
+                        //将用户ID和设备标识UUID绑定,存放在Redis中
+                        String oldDeviceId = (String) redisTemplate.opsForValue().get(user.getId());
+                        //如果之前登陆的设备ID不为空,则通知旧设备下线
+                        if (oldDeviceId != null){
+                                //新建消息,将消息发送给通信微服务,然后通知旧设备下线
+                                WebSocketMessage message = new WebSocketMessage(-1, -1, 100, oldDeviceId, null);
+                                //通过调用聊天服务发送消息
+                                chatFegin.sendMessage(message);
 
+                        }
+                        //将新登陆的设备和用户ID绑定
+                        redisTemplate.opsForValue().set(user.getId(),uuid);
                 }
 
                 return user;
