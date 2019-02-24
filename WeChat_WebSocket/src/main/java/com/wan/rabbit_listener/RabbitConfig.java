@@ -40,6 +40,8 @@ public class RabbitConfig {
         return new FanoutExchange("message_exchange");
     }
 
+
+
     /**
      * 绑定路由和队列
      * @return

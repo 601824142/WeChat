@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @Date 2019/2/22
  */
 @FeignClient("WEB-SERVICE-CHAT")
-@RequestMapping("/chat")
 public interface ChatFegin {
 
-    @RequestMapping("/sendMessage")
+    @RequestMapping("/chat/sendMessage")
     void sendMessage(@RequestBody WebSocketMessage webSocketMessage);
 
 }

@@ -75,6 +75,7 @@ public class ConnectionWebSocketHandler extends SimpleChannelInboundHandler<WebS
     @Override
     public void channelUnregistered(ChannelHandlerContext channelContext) throws Exception {
         System.out.println("有一个客户端下线了！");
+        HeartWebSocketHandler.i = 0;
         //如果有链接下线,则将存放的键值对删除
         channelGroupUtil.removeByChannel(channelContext.channel());
     }

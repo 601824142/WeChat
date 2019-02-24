@@ -3,6 +3,7 @@ package com.wan.controller;
 import com.github.tobato.fastdfs.domain.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
 import com.wan.fegin.UserFegin;
+import com.wan.pojo.User;
 import com.wan.util.Constact;
 import com.wan.util.ResultData;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,11 @@ public class ResourceController {
         return  ResultData.createResultData(Constact.UPLOAD_IMAGE_ERROR_CODE,"图片上传失败！");
     }
 
-
+    @RequestMapping("/test")
+    public User test(){
+        User user = userFegin.queryUserById(7);
+        return user;
+    }
 
 
 }

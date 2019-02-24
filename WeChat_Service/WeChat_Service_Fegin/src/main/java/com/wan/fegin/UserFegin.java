@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @Author 万星明
  * @Date 2019/2/17
  */
-@FeignClient(value = "WEB-SERVICE-USER")
-@RequestMapping("/user")
+@FeignClient("WEB-SERVICE-USER")
 public interface UserFegin {
 
     /**
@@ -21,16 +20,16 @@ public interface UserFegin {
      * @param userId
      * @return
      */
-    @RequestMapping("/updateheader")
-     ResultData<Boolean> updateUserHeader(
+
+    @RequestMapping("/user/updateheader")
+    ResultData<Boolean> updateUserHeader(
             @RequestParam("header") String header,
             @RequestParam("headerCrm") String headerCrm,
             @RequestParam("userId") Integer userId);
 
 
-    @RequestMapping("/queryUserById")
+    @RequestMapping("/user/queryUserById")
     User queryUserById(@RequestParam("id") int id);
-
 
 
 }

@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,12 +21,21 @@ public class RabbitMessageListener {
     @Autowired
     private ChannelGroupUtil channelGroupUtil;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     public void rabbitHandler(WebSocketMessage webSocketMessage){
         System.out.println("网络通信链接服务器从RabbitMQ上监听的信息："+webSocketMessage);
 
         //获得设备号
         String deviceId = webSocketMessage.getDeviceId();
-        //通过设备标识查询到和设备绑定的通信管道
+
+        if (deviceId == null){
+            //通过接收请求的用户ID去Redis中查询设备号
+            deviceId = (String) redisTemplate.opsForValue().get(webSocketMessage.getResponseId());
+        }
+
+        //通过设备号查询到和设备绑定的通信管道
         Channel channel = channelGroupUtil.get(deviceId);
         System.out.println("查询到之前登陆账号设备的channel通信管道："+channel);
         //判断,如果管道不为空,就发送指定的信息

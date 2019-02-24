@@ -32,6 +32,7 @@ public class TextWebSocketHandler extends SimpleChannelInboundHandler<TextWebSoc
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         //如果接收的消息为空,或者接收的消息类型大于0,则符合前后台约定的数据格式
         if (socketMessage !=null && socketMessage.getType() > 0){
             //消息透传,将消息传递给下一个channelHandler处理

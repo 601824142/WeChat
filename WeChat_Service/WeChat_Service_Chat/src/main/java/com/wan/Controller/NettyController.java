@@ -27,6 +27,7 @@ public class NettyController {
 
     @RequestMapping("/getServer")
     public ResultData<String> getNettyServer(){
+        System.out.println("进入获取网络链接服务器");
 
         try {
             List<String> children = zooKeeper.getChildren("/netty", null);

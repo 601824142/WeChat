@@ -128,6 +128,7 @@ public class UserController {
 
     @RequestMapping("/queryUserById")
     public User queryUserById(int id){
+        System.out.println("????????");
         //调用服务,根据用户ID查询用户信息
         User user = userService.queryUserByUserId(id);
         if (user !=null){

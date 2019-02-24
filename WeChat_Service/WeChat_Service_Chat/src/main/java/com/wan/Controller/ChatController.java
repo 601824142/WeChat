@@ -23,6 +23,11 @@ public class ChatController {
     private RedisTemplate redisTemplate;
 
 
+    /**
+     * 发送消息给网络通信服务器
+     * @param webSocketMessage
+     */
+    @RequestMapping("/sendMessage")
     public void sendMessage(@RequestBody WebSocketMessage webSocketMessage){
         System.out.println("聊天服务需要发送消息到通信服务上："+webSocketMessage);
 
