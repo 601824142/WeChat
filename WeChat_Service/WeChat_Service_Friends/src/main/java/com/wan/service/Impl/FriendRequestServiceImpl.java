@@ -3,9 +3,11 @@ package com.wan.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wan.dao.IFriendRequestDao;
 import com.wan.dao.IFriendsDao;
+import com.wan.fegin.ChatFegin;
 import com.wan.fegin.UserFegin;
 import com.wan.pojo.FriendRequest;
 import com.wan.pojo.User;
+import com.wan.pojo.WebSocketMessage;
 import com.wan.service.IFriendRequestService;
 import com.wan.service.IFriendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class FriendRequestServiceImpl implements IFriendRequestService {
 
         @Autowired
         private IFriendsDao friendsDao;
+
+        @Autowired
+        private ChatFegin chatFegin;
 
 
         /**
@@ -58,6 +63,13 @@ public class FriendRequestServiceImpl implements IFriendRequestService {
             if (friendService.isFriends(friendRequest.getRequestId(),friendRequest.getResponseId())){
                 return -2;//如果已经是好友关系,返回-2
             }
+
+            //发送消息通知被申请人,有人添加他为好友
+            int responseId = friendRequest.getResponseId();
+            WebSocketMessage message = new WebSocketMessage(friendRequest.getRequestId(), responseId, 101, null, null);
+            //发送消息
+            chatFegin.sendMessage(message);
+
 
             //如果既没有未处理的申请记录,又不是好友关系,则插入一条好友申请记录
             return friendRequestDao.insert(friendRequest);
